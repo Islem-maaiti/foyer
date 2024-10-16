@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @TestMethodOrder(MethodOrderer.class)
 @ExtendWith(MockitoExtension.class)
 public class BlocServiceImplMock {
@@ -33,6 +35,7 @@ public class BlocServiceImplMock {
     }};
 
     @Test
+    @Order(1)
     public void testRetrieveBloc() {
         // Ajustez le mock pour retourner un bloc spécifique
         Mockito.when(blocRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(bloc));
@@ -42,4 +45,52 @@ public class BlocServiceImplMock {
         Assertions.assertNotNull(retrievedBloc);
 
     }
+
+
+    @Test
+    @Order(2)
+    public void testRetrieveAllBlocs() {
+        // Arrange: Mocking the behavior of the repository
+        Mockito.when(blocRepository.findAll()).thenReturn(listBlocs);
+
+        // Act: Calling the service method
+        List<Bloc> listB = blocService.retrieveAllBlocs();
+
+        // Assert: Verifying the size of the returned list
+        Assertions.assertEquals(3, listB.size()); // Assurez-vous que listBlocs contient 3 blocs
+    }
+
+    @Test
+    @Order(3)
+
+    public void testAddBloc() {
+        Mockito.when(blocRepository.save(Mockito.any(Bloc.class))).thenAnswer(invocation -> {
+            Bloc savedBloc = invocation.getArgument(0);
+            listBlocs.add(savedBloc);
+            return savedBloc;
+        });
+
+        Bloc newBloc = new Bloc();
+        newBloc.setNomBloc("Bloc D");
+        newBloc.setCapaciteBloc(5);
+        blocService.addBloc(newBloc);
+
+        Assertions.assertEquals(4, listBlocs.size());
+    }
+
+    @Test
+    @Order(4)
+    public void testRemoveBloc() {
+        Bloc blocToRemove = new Bloc("Bloc E", 20);
+        listBlocs.add(blocToRemove);
+
+        Mockito.doNothing().when(blocRepository).deleteById(Mockito.anyLong());
+
+        blocService.removeBloc(blocToRemove.getIdBloc());
+        Assertions.assertEquals(  4, listBlocs.size());
+
+    }
+
+
+
 }

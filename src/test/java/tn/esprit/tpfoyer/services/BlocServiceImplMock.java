@@ -91,6 +91,79 @@ public class BlocServiceImplMock {
 
     }
 
+    @Test
+    @Order(5)
+    public void testRetrieveBlocsSelonCapacite() {
+        List<Bloc> expectedBlocs = new ArrayList<>() {{
+            add(new Bloc("Bloc A", 50));
+        }};
+
+        // Mock le comportement pour renvoyer des blocs ayant une capacité >= 40
+        Mockito.when(blocRepository.findAll()).thenReturn(listBlocs);
+
+        List<Bloc> result = blocService.retrieveBlocsSelonCapacite(40);
+
+        Assertions.assertEquals(expectedBlocs.size(), result.size(), "Le nombre de blocs retournés doit correspondre à la capacité minimale.");
+        Assertions.assertTrue(result.containsAll(expectedBlocs), "La liste des blocs retournés doit contenir les blocs attendus.");
+    }
+
+
+    @Test
+    @Order(6)
+    public void testModifyBloc() {
+        // Préparez un bloc à modifier
+        Bloc blocToModify = new Bloc("Bloc A", 50);
+        blocToModify.setIdBloc(1L); // Assurez-vous d'assigner un ID
+
+        // Mock le comportement pour retourner le bloc modifié
+        Mockito.when(blocRepository.save(Mockito.any(Bloc.class))).thenReturn(blocToModify);
+
+        // Appelez la méthode de modification
+        Bloc result = blocService.modifyBloc(blocToModify);
+
+        // Vérifiez que le résultat est le bloc modifié
+        Assertions.assertNotNull(result, "Le bloc modifié ne doit pas être nul.");
+        Assertions.assertEquals("Bloc A", result.getNomBloc(), "Le nom du bloc modifié doit être 'Bloc A'.");
+        Assertions.assertEquals(50, result.getCapaciteBloc(), "La capacité du bloc modifié doit être 50.");
+    }
+
+    @Test
+    @Order(7)
+    public void testTrouverBlocsParNomEtCap() {
+        // Mock le comportement pour renvoyer des blocs selon un nom et une capacité
+        String nomRecherche = "Bloc A";
+        long capaciteRecherche = 50;
+
+        List<Bloc> expectedBlocs = new ArrayList<>() {{
+            add(new Bloc(nomRecherche, capaciteRecherche));
+        }};
+
+        Mockito.when(blocRepository.findAllByNomBlocAndCapaciteBloc(nomRecherche, capaciteRecherche)).thenReturn(expectedBlocs);
+
+        List<Bloc> result = blocService.trouverBlocsParNomEtCap(nomRecherche, capaciteRecherche);
+
+        Assertions.assertEquals(expectedBlocs.size(), result.size(), "Le nombre de blocs retournés doit correspondre à ceux filtrés par nom et capacité.");
+        Assertions.assertTrue(result.containsAll(expectedBlocs), "La liste des blocs retournés doit contenir les blocs attendus.");
+    }
+    @Test
+    @Order(8)
+    public void testTrouverBlocsSansFoyer() {
+        // Mock le comportement pour renvoyer des blocs sans foyer
+        List<Bloc> expectedBlocs = new ArrayList<>() {{
+            add(new Bloc("Bloc A", 50)); // Bloc sans foyer
+            add(new Bloc("Bloc B", 30)); // Bloc sans foyer
+        }};
+
+        Mockito.when(blocRepository.findAllByFoyerIsNull()).thenReturn(expectedBlocs);
+
+        List<Bloc> result = blocService.trouverBlocsSansFoyer();
+
+        Assertions.assertEquals(expectedBlocs.size(), result.size(), "Le nombre de blocs retournés doit correspondre à ceux sans foyer.");
+        Assertions.assertTrue(result.containsAll(expectedBlocs), "La liste des blocs retournés doit contenir les blocs attendus.");
+    }
+
+
+
 
 
 }

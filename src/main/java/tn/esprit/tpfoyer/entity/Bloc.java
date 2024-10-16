@@ -16,6 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
+//hh
 public class Bloc {
 
     @Id

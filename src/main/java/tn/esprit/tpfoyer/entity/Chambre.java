@@ -14,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+// ok
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Chambre {
 
